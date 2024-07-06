@@ -1,17 +1,36 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from datetime import datetime
+from telegram import Update
 from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    MessageHandler,
-    filters,
     ContextTypes,
     ConversationHandler,
-    CallbackQueryHandler,
 )
 import requests
-from .helpers import check_month, events_to_md
 
-state0 = range(1)
+STATE_0 = 20
+
+
+def check_month(date_str):
+    # check if date_str is in yyyy-mm format. If it is not, ValueError will be raised
+    datetime.strptime(date_str, '%Y-%m')
+    return date_str
+
+
+def events_to_md(data, month_str):
+    year = int(month_str[0:4])
+    month = int(month_str[5:7])
+    reply = ""
+    for day_str in data:
+        day = int(day_str)
+        date = datetime(year, month, day)
+        date_str = date.strftime("%Y-%m-%d").replace("-", "\-")  #escape hyphen
+        day_of_week = date.strftime('%a')
+        reply += f"*{date_str} \({day_of_week}\)* \n"
+        for event in data[day_str]:
+            reply += f"{event["event_name"]} \n"
+        reply += "\n" 
+        print(reply)
+    return reply
+
 
 async def view_month(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     month_str = update.message.text
@@ -35,11 +54,7 @@ async def view_month(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         return ConversationHandler.END
     except ValueError:
         await update.message.reply_text("Please enter date as yyyy-mm! Please re-type the date.")
-        return state0
+        return STATE_0
     except requests.exceptions.RequestException:
         await update.message.reply_text("An error occured! Please try /view_month again.")
         return ConversationHandler.END
-    
-
-
-

@@ -1,17 +1,19 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from datetime import datetime
+from telegram import Update
 from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    MessageHandler,
-    filters,
     ContextTypes,
     ConversationHandler,
-    CallbackQueryHandler,
 )
 import requests
-from .helpers import parse_event
 
-state0 = 7
+STATE_0 = 00
+
+
+def parse_event(event_str):
+    date_str, event_name = event_str.split(" ", 1)
+    # check if date_str is in yyyy-mm-dd format. If it is not, ValueError will be raised
+    datetime.strptime(date_str, "%Y-%m-%d")
+    return date_str, event_name
 
 
 async def receive_event(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -35,7 +37,7 @@ async def receive_event(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
         await update.message.reply_text(
             "The format is <yyyy-mm-dd> <event name>. Eg. 2000-01-01 Lunch with family. Please re-type."
         )
-        return state0
+        return STATE_0
     except requests.exceptions.RequestException:
         await update.message.reply_text("An error occured! Please try /add again.")
         return ConversationHandler.END

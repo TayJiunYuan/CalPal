@@ -1,10 +1,8 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
     filters,
-    ContextTypes,
     ConversationHandler,
     CallbackQueryHandler,
 )
@@ -38,13 +36,13 @@ def main() -> None:
     conv_handler = ConversationHandler(
         entry_points=[add_handler, month_handler, delete_handler],
         states={
-            add.state0: [
+            add.STATE_0: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, add.receive_event)
             ],
-            view_month.state0: [
+            view_month.STATE_0: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, view_month.view_month)
             ],
-            delete.state0: [
+            delete.STATE_0: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, delete.select_event)
             ],
         },
@@ -56,7 +54,6 @@ def main() -> None:
     application.add_handler(conv_handler)
     application.add_handler(CommandHandler("start", commands.start_command))
     application.add_handler(CallbackQueryHandler(delete.delete_event_callback))
-
 
     application.run_polling()
 
