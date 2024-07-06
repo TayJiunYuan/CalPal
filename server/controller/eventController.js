@@ -7,8 +7,8 @@ const { getMonthRange } = require('./utils');
  * @body {String} user_id
  * @body {String} event_date yyyy-mm-dd
  * @body {String} event_name
- * @response 200 - updated user obj
- * @response 400 - {message: 'User not found'}
+ * @response 200 - { message: 'Success' }
+ * @response 404 - {message: 'User not found'}
  * @response 500 - { message: error.message }
  */
 
@@ -22,7 +22,7 @@ const addEvent = async (req, res) => {
     const checkUserExistQueryValues = [userId];
     const { rows } = await pool.query(checkUserExistQuery, checkUserExistQueryValues);
     if (!rows.length) {
-      return res.status(400).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     const addEventQuery = 'INSERT INTO events (event_name, event_date, user_id) VALUES ($1, $2, $3)';
@@ -40,8 +40,8 @@ const addEvent = async (req, res) => {
  * @param {String} user_id
  * @param {String} event_date yyyy-mm-dd
  * @response 200 - Array of event objs eg. [{"event_id":3,"event_name":"lunchies","user_id":"a1b2c7","event_date":"2019-06-06T16:00:00.000Z"},{"event_id":4,"event_name":"dinners","user_id":"a1b2c7","event_date":"2019-06-06T16:00:00.000Z"}]
- * @response 400 - { message: 'User not found!' }
- * @response 404 - { message: 'No events for this date' }
+ * @response 404 - { message: 'User not found' }
+ * @response 404 - { message: 'Event not found' }
  * @response 500 - { message: error.message }
  */
 const getUserEventsDay = async (req, res) => {
@@ -53,7 +53,7 @@ const getUserEventsDay = async (req, res) => {
     const checkUserExistQueryValues = [userId];
     const { rows } = await pool.query(checkUserExistQuery, checkUserExistQueryValues);
     if (!rows.length) {
-      return res.status(400).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     const getEventsDayQuery = 'SELECT * FROM events WHERE user_id = $1 AND event_date = $2';
@@ -61,7 +61,7 @@ const getUserEventsDay = async (req, res) => {
     const events = await pool.query(getEventsDayQuery, getEventsDayQueryValues);
 
     if (!events.rows.length) {
-      return res.status(404).json({ message: 'No events for this date' });
+      return res.status(404).json({ message: 'Event not found' });
     }
 
     return res.status(200).json(events.rows);
@@ -72,12 +72,12 @@ const getUserEventsDay = async (req, res) => {
 
 /**
  *
- * @route /GET /api/event/:user_id/day/:event_date
+ * @route /GET /api/event/:user_id/month/:event_month
  * @param {String} user_id
  * @param {String} event_month yyyy-mm
  * @response 200 - Array of event objs eg. [{"event_id":3,"event_name":"lunchies","user_id":"a1b2c7","event_date":"2019-06-06T16:00:00.000Z"},{"event_id":4,"event_name":"dinners","user_id":"a1b2c7","event_date":"2019-06-06T16:00:00.000Z"}]
- * @response 400 - { message: 'User not found!' }
- * @response 404 - { message: 'No events for this date' }
+ * @response 404 - { message: 'User not found' }
+ * @response 404 - { message: 'Event not found' }
  * @response 500 - { message: error.message }
  */
 const getUserEventsMonth = async (req, res) => {
@@ -89,7 +89,7 @@ const getUserEventsMonth = async (req, res) => {
     const checkUserExistQueryValues = [userId];
     const { rows } = await pool.query(checkUserExistQuery, checkUserExistQueryValues);
     if (!rows.length) {
-      return res.status(400).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     const { startDate, endDate } = getMonthRange(eventMonth);
@@ -98,7 +98,7 @@ const getUserEventsMonth = async (req, res) => {
     const events = await pool.query(getEventsMonthQuery, getEventsMonthQueryValues);
 
     if (!events.rows.length) {
-      return res.status(404).json({ message: 'No events for this month' });
+      return res.status(404).json({ message: 'Event not found' });
     }
 
     let sorted_events = {};
@@ -124,8 +124,8 @@ const getUserEventsMonth = async (req, res) => {
  * Delete Event by id
  * @route PATCH /api/event/delete_event
  * @body {String} event_id
- * @response 200 - updated user obj
- * @response 400 - { message: 'Event ID not found' }
+ * @response 200 - { message: 'Success' }
+ * @response 404 - { message: 'Event ID not found' }
  * @response 500 - { message: error.message }
  */
 
@@ -136,10 +136,9 @@ const deleteEvent = async (req, res) => {
     const deleteEventQuery = 'DELETE FROM events WHERE event_id = $1';
     const deleteEventQueryValues = [eventId];
     const result = await pool.query(deleteEventQuery, deleteEventQueryValues);
-    console.log(result);
     // check if delete was successful
     if (result.rowCount == 0) {
-      return res.status(400).json({ message: 'Event ID not found' });
+      return res.status(404).json({ message: 'Event not found' });
     }
     return res.status(200).json({ message: 'Success' });
   } catch (error) {
