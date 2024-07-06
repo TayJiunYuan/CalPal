@@ -7,7 +7,7 @@ const { getMonthRange } = require('./utils');
  * @body {String} user_id
  * @body {String} event_date yyyy-mm-dd
  * @body {String} event_name
- * @response 200 - updated user obj
+ * @response 200 - { message: 'Success' }
  * @response 400 - {message: 'User not found'}
  * @response 500 - { message: error.message }
  */
@@ -72,7 +72,7 @@ const getUserEventsDay = async (req, res) => {
 
 /**
  *
- * @route /GET /api/event/:user_id/day/:event_date
+ * @route /GET /api/event/:user_id/month/:event_month
  * @param {String} user_id
  * @param {String} event_month yyyy-mm
  * @response 200 - Array of event objs eg. [{"event_id":3,"event_name":"lunchies","user_id":"a1b2c7","event_date":"2019-06-06T16:00:00.000Z"},{"event_id":4,"event_name":"dinners","user_id":"a1b2c7","event_date":"2019-06-06T16:00:00.000Z"}]
@@ -124,7 +124,7 @@ const getUserEventsMonth = async (req, res) => {
  * Delete Event by id
  * @route PATCH /api/event/delete_event
  * @body {String} event_id
- * @response 200 - updated user obj
+ * @response 200 - { message: 'Success' }
  * @response 400 - { message: 'Event ID not found' }
  * @response 500 - { message: error.message }
  */

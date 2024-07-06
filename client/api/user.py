@@ -5,7 +5,9 @@ class UserApiService:
         self.base_url = base_url
 
     def create_user(self, user_id, username):
-        url = self.base_url + 'create_user'
+        url = self.base_url + '/create_user'
         body = { "user_id": user_id, "username": username }
-        res = requests.post(url, body)
-        return { "error": False }
+        res = requests.post(url, body, timeout=15)
+        return { "status_code": res.status_code }
+
+        
