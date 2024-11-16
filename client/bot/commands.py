@@ -56,3 +56,15 @@ async def delete_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 async def cancel_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text("Operation cancelled.")
     return ConversationHandler.END
+
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    await update.message.reply_text(
+        "Welcome to CalPal 1.0 :) \n\n"
+        "/add - Add an event\n"
+        "/view_month - View events in the month\n"
+        "/delete - Delete an event\n\n"
+        "Or, just type any message to call our AI chatbot! \n"
+        'For example, ask: "What events do I have today?"'
+    )
+    return ConversationHandler.END

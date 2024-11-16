@@ -94,7 +94,8 @@ const getUserEventsMonth = async (req, res) => {
 
     const { startDate, endDate } = getMonthRange(eventMonth);
     const getEventsMonthQuery = 'SELECT * FROM events WHERE user_id = $1 AND event_date >= $2 AND event_date < $3';
-    const getEventsMonthQueryValues = [userId, startDate, endDate];
+    const getEventsMonthQueryValues = [
+      userId, startDate, endDate];
     const events = await pool.query(getEventsMonthQuery, getEventsMonthQueryValues);
 
     if (!events.rows.length) {
@@ -107,7 +108,6 @@ const getUserEventsMonth = async (req, res) => {
       Note: When saving into Date in Postgre, the timezone and time is not saved. Thus, when JS loads the event_date, it will load it as 00:00:00 GMT+8 BUT display in UTC thus the date will not look correct. getDate() will still work as it takes local timezone GMT +8.
       */
       const day = new Date(eventObj.event_date).getDate();
-      console.log('day: ' + day);
       if (day in sorted_events) {
         sorted_events[day].push(eventObj);
       } else {
