@@ -8,4 +8,4 @@ node_modules
 eslint.config.mjs
 
 #pycache
-.pyc
+*.pyc

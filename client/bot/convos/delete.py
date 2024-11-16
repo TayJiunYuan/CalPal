@@ -62,16 +62,16 @@ async def select_event(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         elif res["status_code"] == 404:
             if res["data"]["message"] == "User not found":
                 await update.message.reply_text("Please press /start first.")
+
             else:
                 await update.message.reply_text(
                     "There are no events in this day! Please enter another command."
                 )
-            return ConversationHandler.END
         else:
             await update.message.reply_text(
                 "An error occured! Please try /delete again."
             )
-            return ConversationHandler.END
+        return ConversationHandler.END
     except ValueError:
         await update.message.reply_text(
             "Please enter date as yyyy-mm-dd! Please re-type the date."
@@ -94,7 +94,6 @@ async def delete_event_callback(
             await update.callback_query.message.reply_text(
                 f"Event: {event_name} has been deleted."
             )
-            await update.callback_query.answer()
         elif res["status_code"] == 400:
             await update.message.reply_text(
                 "Event not found! Please try /delete again."
@@ -103,6 +102,7 @@ async def delete_event_callback(
             await update.message.reply_text(
                 "An error occured! Please try /delete again."
             )
+        # Issue: ConversationHandler.END here not working, thus the delete conversation is ended in the select_event func above
         return ConversationHandler.END
     except requests.exceptions.RequestException:
         await update.message.reply_text("An error occured! Please try /delete again.")
