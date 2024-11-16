@@ -1,11 +1,14 @@
 # Dependency directories
 node_modules
 
-#dotenv
+# dotenv
 .env
 
-#eslint
+# eslint
 eslint.config.mjs
 
-#pycache
+# pycache
 *.pyc
+
+# vscode
+.vscode/*
